@@ -38,7 +38,42 @@ const MORSE_TABLE = {
 };
 
 function decode(expr) {
-    // write your solution here
+
+    const binaryDictionary = {
+        '10': '.',
+        '11': '-',
+        '00': ''
+    };
+
+    const wordsBinary = expr.split('**********');
+
+    let resStr = '';
+
+    for (let word of wordsBinary) {
+
+        const lettersBinary = word.match(/.{1,10}/g);
+
+        let wordAlphabetical = '';
+
+        for (let letter of lettersBinary) {
+
+            const charsBinary = letter.match(/.{1,2}/g);
+
+            let letterMorse = '';
+
+            for (let binaryMorseCode of charsBinary) {
+
+                letterMorse += binaryDictionary[binaryMorseCode];
+
+            }
+
+            wordAlphabetical += MORSE_TABLE[letterMorse];
+        }
+
+        resStr += wordAlphabetical + ' ';
+    }
+    
+    return resStr.slice(0, resStr.length - 1);
 }
 
 module.exports = {
