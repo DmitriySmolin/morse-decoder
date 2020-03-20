@@ -1,79 +1,93 @@
 const MORSE_TABLE = {
-    '.-':     'a',
-    '-...':   'b',
-    '-.-.':   'c',
-    '-..':    'd',
-    '.':      'e',
-    '..-.':   'f',
-    '--.':    'g',
-    '....':   'h',
-    '..':     'i',
-    '.---':   'j',
-    '-.-':    'k',
-    '.-..':   'l',
-    '--':     'm',
-    '-.':     'n',
-    '---':    'o',
-    '.--.':   'p',
-    '--.-':   'q',
-    '.-.':    'r',
-    '...':    's',
-    '-':      't',
-    '..-':    'u',
-    '...-':   'v',
-    '.--':    'w',
-    '-..-':   'x',
-    '-.--':   'y',
-    '--..':   'z',
-    '.----':  '1',
-    '..---':  '2',
-    '...--':  '3',
-    '....-':  '4',
-    '.....':  '5',
-    '-....':  '6',
-    '--...':  '7',
-    '---..':  '8',
-    '----.':  '9',
-    '-----':  '0',
+    '.-': 'a',
+    '-...': 'b',
+    '-.-.': 'c',
+    '-..': 'd',
+    '.': 'e',
+    '..-.': 'f',
+    '--.': 'g',
+    '....': 'h',
+    '..': 'i',
+    '.---': 'j',
+    '-.-': 'k',
+    '.-..': 'l',
+    '--': 'm',
+    '-.': 'n',
+    '---': 'o',
+    '.--.': 'p',
+    '--.-': 'q',
+    '.-.': 'r',
+    '...': 's',
+    '-': 't',
+    '..-': 'u',
+    '...-': 'v',
+    '.--': 'w',
+    '-..-': 'x',
+    '-.--': 'y',
+    '--..': 'z',
+    '.----': '1',
+    '..---': '2',
+    '...--': '3',
+    '....-': '4',
+    '.....': '5',
+    '-....': '6',
+    '--...': '7',
+    '---..': '8',
+    '----.': '9',
+    '-----': '0',
 };
 
 function decode(expr) {
 
     const binaryDictionary = {
-        '10': '.',
-        '11': '-',
-        '00': ''
+        "10": ".",
+        "11": "-",
+        "00": ""
     };
 
-    const wordsBinary = expr.split('**********');
+    let expArr = expr.replace(/(\S{10})/g, "$1,")
+        .slice(0, (expr.replace(/(\S{10})/g, "$1,")).length - 1)
+        .split(',');
 
-    let resStr = '';
+    let word = [];
 
-    for (let word of wordsBinary) {
+    cutElem(expArr);
 
-        const lettersBinary = word.match(/.{1,10}/g);
+    function cutElem(expArr) {
+        let stack = expArr;
 
-        let wordAlphabetical = '';
+        let binaryArr = [];
 
-        for (let letter of lettersBinary) {
+        for (let i = 0; i < stack.length; i++) {
 
-            const charsBinary = letter.match(/.{1,2}/g);
+            if (binaryArr.length === 1) break;
 
-            let letterMorse = '';
+            if (stack[i] === "**********") {
+                word.push(' ');
+                stack.splice(stack.indexOf(stack[i]), 1)
+            };
 
-            for (let binaryMorseCode of charsBinary) {
-
-                letterMorse += binaryDictionary[binaryMorseCode];
-
+            if (stack[i] !== "" && stack.length !== 0) {
+                binaryArr.push(stack[i]);
+                stack.splice(stack.indexOf(stack[i]), 1);
             }
-
-            wordAlphabetical += MORSE_TABLE[letterMorse];
         }
 
-        resStr += wordAlphabetical + ' ';
+        let binaryCode = binaryArr.join("").match(/.{1,2}/g);;
+
+        let morseCode = "";
+
+        for (let i = 0; i < binaryCode.length; i++) {
+            if (binaryCode.length === 0) break;
+
+            morseCode += binaryDictionary[binaryCode[i]];
+        }
+
+        word.push(MORSE_TABLE[morseCode]);
+
+        stack.length !== 0 ? cutElem(stack) : stack;
     }
-    
-    return resStr.slice(0, resStr.length - 1);
+    return word.join("");
 }
 
 module.exports = {
